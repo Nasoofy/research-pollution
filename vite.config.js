@@ -10,4 +10,6 @@ export default defineConfig({
       },
     }),
   ],
+  base: '/deckgl-react-demo/', 
+
 })

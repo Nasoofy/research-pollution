@@ -1,5 +1,6 @@
 {
   "name": "deckgl-react-demo",
+  "homepage": "https://yourusername.github.io/deckgl-react-demo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@deck.gl/aggregation-layers": "^9.2.2",

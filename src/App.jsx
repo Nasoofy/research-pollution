@@ -1,9 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { DeckGL } from '@deck.gl/react';
 import { Map} from 'react-map-gl/maplibre';
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 import './App.css';
-const DATA_URL  =  'https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/screen-grid/uber-pickup-locations.json';
+import Papa from "papaparse";
+
+
 
 
 const MAP_STYLE= 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
@@ -22,6 +24,23 @@ function App(){
   const[intensity, setIntensity] = useState(1);
   const[radius, setRadius] = useState(5);
   const[threshold,setThreshold] = useState(0.03);
+
+  export default function MapwithCSV(){
+    const[data, setData] = useState([]);
+    useEffect(() => {
+      fetch("synthetic_pollution_california_timeseries.csv")
+      .then((res) =>res.text())
+      .then((text) => {
+        const parsed = Papa.parse(text, {header: true}).data;
+        const cleanData = parsed
+        .filter((d) => d.latitude && d.longitude)
+      });
+    },[]);
+  
+    return (
+      
+    )
+  }
 
   const layers =[
     new HeatmapLayer({
