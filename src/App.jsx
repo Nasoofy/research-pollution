@@ -11,9 +11,9 @@ import Papa from "papaparse";
 const MAP_STYLE= 'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json';
 
 const INTIAL = {
-  longitude: -73.9851,
-  latitude: 40.7589,
-  zoom: 9,
+  longitude: -119.4179,
+  latitude: 36.7783,
+  zoom: 6,
   maxZoom: 16,
   pitch: 0,
   bearing: 0
@@ -21,11 +21,7 @@ const INTIAL = {
 
 
 function App(){
-  const[intensity, setIntensity] = useState(1);
-  const[radius, setRadius] = useState(5);
-  const[threshold,setThreshold] = useState(0.03);
 
-  export default function MapwithCSV(){
     const[data, setData] = useState([]);
     useEffect(() => {
       fetch("synthetic_pollution_california_timeseries.csv")
@@ -34,20 +30,34 @@ function App(){
         const parsed = Papa.parse(text, {header: true}).data;
         const cleanData = parsed
         .filter((d) => d.latitude && d.longitude)
+        .map((d) => ({
+          id: Number(d.id),
+          longitude : parseFloat(d.longitude),
+          latitude : parseFloat(d.latitude),
+          value : parseFloat(d.no2_ug_m3),
+          time : parseFloat(d.timestamp),
+        }));
+        .filter((d) =>
+            d.latitude >= 32.5 &&
+            d.latitude <= 42 &&
+            d.longitude >= -124.5 &&
+            d.longitude <= -114
+        );
+        setData(cleanData)
       });
-    },[]);
-  
-    return (
-      
-    )
-  }
+    },[])
+
+  const[intensity, setIntensity] = useState(1);
+  const[radius, setRadius] = useState(5);
+  const[threshold,setThreshold] = useState(0.03);
 
   const layers =[
     new HeatmapLayer({
       id: 'heatmapLayer',
-      data: DATA_URL,
-      getPosition: d => [d[0], d[1]],
-      getWeight: d => d[2],
+      data: data,
+      getPosition: d => [d.longitude, d.latitude],
+      getWeight: d => d.value,
+      timestamp: d => d.timestamp,
       radiusPixels: radius,
       intensity: intensity,
       threshold: threshold,
@@ -64,14 +74,21 @@ function App(){
       </DeckGL>
       
       <div className="title-overlap">
-        NYC Uber Pickups Heatmap
+        Cali Poluation 
       </div>
       
       <div className="control-panel">
-        <h2>Uber pickup in NYC</h2>
-        <p>From:April 2014 to Septemeber 2014.</p>
-      
+        <h2>Poluation in Cali</h2>      
         <div className="sliders">
+          <label>
+            Timestaps:
+            <input
+              type="range"
+              min = "0"
+              //value = {timestamp}
+              
+            ></input>
+          </label>
           <label>
             Intensity: {intensity.toFixed(2)}
             <input
