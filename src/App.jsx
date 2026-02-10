@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DeckGL } from '@deck.gl/react';
 import { Map } from 'react-map-gl/maplibre';
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
-//import { IconLayer } from 'deck.gl/layers';
+import { LineLayer} from '@deck.gl/layers';
 import './App.css';
 import Papa from "papaparse";
 import inside from "point-in-polygon";
@@ -36,9 +36,20 @@ function App() {
   const [radius, setRadius] = useState(10);
   const [threshold, setThreshold] = useState(0.03);
   const [timestamp, setTimestamp] = useState(0);
-  const [showArrows, setShowArrows] = useState(true);
-  const [arrowData, setArrowData] = useState([]);
 
+  const arrowData = data.map(d=> {
+    const angle = (d.latitude + d.longitude) *.5;
+    const length = 0.05 + d.value*0.002;
+
+    return {
+      source: [d.longitude, d.latitude],
+      target:[
+        d.longitude + length * Math.cos(angle),
+        d.latitude + length * Math.sin(angle)
+      ],
+      value: d.value
+    };
+  });
   useEffect(() => {
     fetch("synthetic_pollution_california_timeseries.csv")
       .then((res) => res.text())
@@ -77,6 +88,15 @@ function App() {
       radiusPixels: radius,
       intensity: intensity,
       threshold: threshold,
+    }),
+    new LineLayer({
+      id: 'pop-arrows',
+      data: arrowData,
+      getSourcePosition: d => d.source,
+      getTargetPosition: d=> d.target,
+      getWidth: d=> Math.max(1, d.value/10),
+      getColor: [255,255,255,120],
+      pickable: false,
     })
   ];
 

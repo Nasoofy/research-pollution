@@ -1,0 +1,23 @@
+# environment.yml  (checked into repo)
+name: pollution-env
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy<2
+  # --- PyTorch placeholder (CPU build) ---
+  - pytorch=2.2.*=*cpu*      # CI uses this
+  - torchvision
+  - torchaudio
+  # graph / science
+  - scipy
+  - xarray
+  - pytest
+  - black
+  - isort
+  - pip
+  - pip:
+      - torch-geometric
+      - scikit-learn
+      - pandas
